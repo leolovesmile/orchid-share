@@ -28,7 +28,7 @@ docker run -it -p 17080:9090 -p 1883:1883 -p 5683:5683/udp -v /app/tb/.mytb-data
 docker run -it -p 17080:9090 -p 1883:1883 -p 5683:5683/udp -v /app/tb/.mytb02-data:/data -v /app/tb/.mytb02-logs:/var/log/thingsboard --name tbcassandra thingsboard/tb-cassandra
 ```
 - 启动完成以后，就可以通过宿主机的ip和设定好的端口映射访问thingsboard的控制台了  
-![image](../img/thingsboard-console-login.png)
+![image](./img/thingsboard-console-login.png)
   - 用户名：sysadmin@thingsboard.org
   - 密码：sysadmin
 
