@@ -31,5 +31,6 @@ docker run -it -p 17080:9090 -p 1883:1883 -p 5683:5683/udp -v /app/tb/.mytb02-da
 ![image](./img/thingsboard-console-login.png)
   - 用户名：sysadmin@thingsboard.org
   - 密码：sysadmin
+  - 其他的demo account请参考[此页面](https://thingsboard.io/docs/samples/demo-account/)
 
-
+- 关于thingsboard的配置，这里有全面的[配置项列表](https://thingsboard.io/docs/user-guide/install/config/)

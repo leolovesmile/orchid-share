@@ -38,6 +38,8 @@ sudo yum-config-manager --enable docker-ce-nightly
 ```
 sudo yum install docker-ce docker-ce-cli containerd.io
 ```
+- 如过出现对*container-selinux*的版本有要求，可以另行安装  
+`yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.74-1.el7.noarch.rpm`
 - 中间可能涉及到finger print的验证，值为 *060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35*
 - 安装完成后， *docker* 组会被创建
 - 如果要安装指定版本，可以先列出当前repo里面可用的版本，然后再指定版本名称进行安装
