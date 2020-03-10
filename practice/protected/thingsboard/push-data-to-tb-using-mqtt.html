@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        
+    </head>
+    <body class="vscode-light">
+        <ul>
+<li>
+<p>登录<a href="http://47.105.116.136:9090/login">TB后台</a></p>
+<ul>
+<li>用户名： <a href="mailto:tenant@thingsboard.org">tenant@thingsboard.org</a></li>
+<li>密码： 3L4q!j6GW<br>
+<img src=".\imgs\login-tb.png" alt="img"></li>
+</ul>
+</li>
+<li>
+<p>创建一个设备（当然，也可以复用已有的设备）<br>
+<img src=".\imgs\create-tb-devices-1.png" alt="img"><br>
+点击新建设备按钮：<br>
+<img src=".\imgs\create-tb-devices-2.png" alt="img"><br>
+填写设备信息表单，参考如下：<br>
+<img src=".\imgs\create-tb-devices-3.png" alt="img"></p>
+</li>
+<li>
+<p>创建好设备以后，在设备列表中点选刚刚创建的设备，在出现的设备信息面板中，点击“复制访问令牌”按钮，将已创建的设备的访问令牌复制下来。
+<img src=".\imgs\copy-tb-devices-token.png" alt="img"></p>
+<ul>
+<li>另外，在设备信息面板中，还可以查看设备的“属性”(设备相对固定的信息，例如序列号)，最新的一次数据以及关联的警告，事件等等<br>
+<img src=".\imgs\tb-devices-info-pannel.png" alt="img"></li>
+</ul>
+</li>
+<li>
+<p>有了上一步获得的设备的“访问令牌”，即可使用MQTT进行推送了，下面提供使用http和mqtt两种协议进行数据推送的示例：</p>
+<ul>
+<li>使用nodejs和mqtt库进行推送的参考（其他语言，如java，c#逻辑类似）</li>
+</ul>
+</li>
+</ul>
+<pre><code><div>var mqtt = require('mqtt');
+
+// 注意，这里的IP地址，即hostname，是47.105.116.136，端口使用默认的mqtt端口1883
+// 第二个参数就是前文提到的访问令牌
+console.log('Connecting to: %s using access token: %s', '47.105.116.136', 'dt23iJdTHkNXyJdUn09p');
+
+// “遥测数据”样例，json格式，字段的名字就是测量项的名字，值就是当前测量项的值
+var telemetry = '{&quot;TYPE_ORIENTATION_0&quot;: 328.989990,&quot;TYPE_ORIENTATION_1&quot;: -5.660000,&quot;TYPE_ORIENTATION_2&quot;: -0.700000,&quot;TYPE_GYROSCOPE_0&quot;: 0.000750,&quot;TYPE_GYROSCOPE_1&quot;: 0.000733,&quot;TYPE_GYROSCOPE_2&quot;: 0.000489,&quot;TYPE_PROXIMITY_0&quot;: 5.000000,&quot;TYPE_PROXIMITY_1&quot;: 233.000000,&quot;TYPE_PROXIMITY_2&quot;: 0.000000,&quot;TYPE_LINEAR_ACCELERATION_0&quot;: -0.006400,&quot;TYPE_LINEAR_ACCELERATION_1&quot;: -0.006800,&quot;TYPE_LINEAR_ACCELERATION_2&quot;: -0.029800}';
+
+var attrib = '{&quot;firmware_version&quot;:&quot;1.0.1&quot;, &quot;serial_number&quot;:&quot;SN-001&quot;}';
+
+// 使用url和令牌进行连接
+var client  = mqtt.connect('mqtt://'+ '47.105.116.136',{
+    username: 'dt23iJdTHkNXyJdUn09p'
+});
+
+client.on('connect', function () {
+    console.log('Client connected!');
+
+    //这一句是用来推送“属性数据”的，通常，我们不会经常更改属性数据
+    client.publish('v1/devices/me/attributes', attrib;
+    console.log('Attributes published!');
+
+    //这一句是用来推送“遥测数据”的，通常，我们会以一个时间间隔不断推送数据到平台上
+    client.publish('v1/devices/me/telemetry', telemetry);
+    console.log('Telemetry published!');
+
+    client.end();
+});
+</div></code></pre>
+<ul>
+<li>使用<code>curl</code>命令，以http协议推送数据：</li>
+</ul>
+<pre><code><div>curl -v -X POST -d &quot;{\&quot;TYPE_ORIENTATION_0\&quot;: 328.989990,\&quot;TYPE_ORIENTATION_1\&quot;: -5.660000,\&quot;TYPE_ORIENTATION_2\&quot;: -0.700000,\&quot;TYPE_GYROSCOPE_0\&quot;: 0.000750,\&quot;TYPE_GYROSCOPE_1\&quot;: 0.000733,\&quot;TYPE_GYROSCOPE_2\&quot;: 0.000489,\&quot;TYPE_PROXIMITY_0\&quot;: 5.000000,\&quot;TYPE_PROXIMITY_1\&quot;: 233.000000,\&quot;TYPE_PROXIMITY_2\&quot;: 0.000000,\&quot;TYPE_LINEAR_ACCELERATION_0\&quot;: -0.006400,\&quot;TYPE_LINEAR_ACCELERATION_1\&quot;: -0.006800,\&quot;TYPE_LINEAR_ACCELERATION_2\&quot;: -0.029800}&quot; http://47.105.116.136:9090/api/v1/dt23iJdTHkNXyJdUn09p/telemetry --header &quot;Content-Type:application/json&quot;
+</div></code></pre>
+<p>注意，这里请求体里面就是json格式封装的测量数据，url里面包含了设备的访问令牌</p>
+<ul>
+<li>若数据推送成功，可以在thingsboard的控制台的对应设备的设备面板的“最新遥测”选项卡中看到你最新推送的数据<br>
+<img src=".\imgs\tb-device-latest-telemetry.png" alt="img"><br>
+如果要处理这些数据，可以使用规则引擎，也可以在数据库中看到。或者使用仪表板来对测量数据进行可视化和实时刷新。</li>
+</ul>
+
+    </body>
+    </html>

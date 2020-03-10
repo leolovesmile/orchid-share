@@ -26,11 +26,31 @@ docker run -it -p 9090:9090 -p 1883:1883 -p 5683:5683/udp -v ~/.mytb-data:/data 
 docker run -it -p 17080:9090 -p 1883:1883 -p 5683:5683/udp -v /app/tb/.mytb-data:/data -v /app/tb/.mytb-logs:/var/log/thingsboard --name tbtesting thingsboard/tb
 
 docker run -it -p 17080:9090 -p 1883:1883 -p 5683:5683/udp -v /app/tb/.mytb02-data:/data -v /app/tb/.mytb02-logs:/var/log/thingsboard --name tbcassandra thingsboard/tb-cassandra
+
+docker run -it -p 9090:9090 -p 1883:1883 -p 5683:5683/udp -v /application/data/tb/.dztb01-cassandra-data:/data -v /application/data/tb/dztb01-log:/var/log/thingsboard --name dztbcassandra01 thingsboard/tb-cassandra
 ```
 - 启动完成以后，就可以通过宿主机的ip和设定好的端口映射访问thingsboard的控制台了  
 ![image](./img/thingsboard-console-login.png)
   - 用户名：sysadmin@thingsboard.org
   - 密码：sysadmin
   - 其他的demo account请参考[此页面](https://thingsboard.io/docs/samples/demo-account/)
+  - tenant@thingsboard.org  3L4q!j6GW
 
 - 关于thingsboard的配置，这里有全面的[配置项列表](https://thingsboard.io/docs/user-guide/install/config/)
+
+
+
+```
+
+docker exec -it e5fbbff3ca3a /bin/bash
+docker inspect e5fbbff3ca3a
+cqlsh -u cassandra -p cassandra
+
+
+start-tb.sh
+
+"CASSANDRA_HOST=localhost",
+"CASSANDRA_PORT=9042"
+"DATABASE_TS_TYPE=cassandra",
+"DATABASE_ENTITIES_TYPE=cassandra",
+```
